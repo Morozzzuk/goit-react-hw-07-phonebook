@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { nanoid } from 'nanoid';
-import PropTypes from 'prop-types';
 import {
   FormContainer,
   InputContainer,
@@ -8,35 +7,39 @@ import {
   Input,
   Button,
 } from './ContactForm.styled';
-import { useDispatch, useSelector } from 'react-redux';
-import { getContacts, addContact } from 'redux/contactsSlice';
+import {
+  useGetContactsQuery,
+  useCreateContactMutation,
+} from 'redux/contactsApi';
+import { toast } from 'react-toastify';
 
-function ContactForm() {
+export default function ContactForm() {
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [phone, setPhone] = useState('');
 
-  const contacts = useSelector(getContacts);
-  const dispatch = useDispatch();
+  const { data: contacts } = useGetContactsQuery();
+  const [createContact] = useCreateContactMutation();
 
   const changeName = e => setName(e.target.value);
-  const changeNumber = e => setNumber(e.target.value);
+  const changeNumber = e => setPhone(e.target.value);
 
   const handleSubmit = e => {
     e.preventDefault();
     const newContact = {
       name,
-      number,
+      phone,
       id: nanoid(),
     };
     contacts.find(contact => contact.name.toLowerCase() === name.toLowerCase())
-      ? alert(`${name} is already in contacts`)
-      : dispatch(addContact(newContact));
+      ? toast.warn(`${name} : ${phone} is already in contacts`)
+      : createContact(newContact);
+
     reset();
   };
 
   const reset = () => {
     setName('');
-    setNumber('');
+    setPhone('');
   };
 
   return (
@@ -47,12 +50,13 @@ function ContactForm() {
           <Input
             type="text"
             name="name"
-            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+            pattern="^[a-zA-Zа-яА-Я]+([' \-][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*$"
             title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
             required
             value={name}
             onChange={changeName}
-            placeholder="Name"
+            placeholder="Enter name"
+            autoComplete="off"
           />
         </LabelInput>
 
@@ -61,12 +65,13 @@ function ContactForm() {
           <Input
             type="tel"
             name="number"
-            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+            phonePattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             required
-            value={number}
+            value={phone}
             onChange={changeNumber}
-            placeholder="Number"
+            placeholder="Enter phone number"
+            autoComplete="off"
           />
         </LabelInput>
       </InputContainer>
@@ -75,9 +80,3 @@ function ContactForm() {
     </FormContainer>
   );
 }
-
-ContactForm.propTypes = {
-  handleSubmit: PropTypes.func,
-};
-
-export default ContactForm;
