@@ -2,8 +2,11 @@ import { Container, Section, Title } from './App.styled';
 import ContactForm from './ContactForm/ContactForm';
 import ContactList from './ContactList/ContactList';
 import Filter from './Filter/Filter';
+import { ToastContainer } from 'react-toastify';
 
-const App = () => {
+import 'react-toastify/dist/ReactToastify.css';
+
+export default function App() {
   return (
     <Container>
       <Section title="Phonebook">
@@ -16,8 +19,7 @@ const App = () => {
         <Filter />
         <ContactList />
       </Section>
+      <ToastContainer />
     </Container>
   );
-};
-
-export default App;
+}
