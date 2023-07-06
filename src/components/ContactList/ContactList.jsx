@@ -1,19 +1,22 @@
 import ContactItem from 'components/ContactItem/ContactItem';
-import PropTypes from 'prop-types';
 import { List, Error } from './ContactList.styled';
-import { useSelector, useDispatch } from 'react-redux';
-import { getContacts, getFilter, deleteContact } from 'redux/contactsSlice';
+import { useSelector } from 'react-redux';
+import { getFilter } from 'redux/contactsSlice';
+import {
+  useGetContactsQuery,
+  useDeleteContactMutation,
+} from 'redux/contactsApi';
 
-const ContactList = () => {
-  const contacts = useSelector(getContacts);
-  const filter = useSelector(getFilter);
-  const dispatch = useDispatch();
+export default function ContactList() {
+  const { data = [] } = useGetContactsQuery();
+  const { filter } = useSelector(state => getFilter(state));
+  const [deleteContact] = useDeleteContactMutation();
 
-  const handleDeleteContact = id => dispatch(deleteContact(id));
+  const handleDeleteContact = id => deleteContact(id);
 
   const filterList = () => {
     const normalValue = filter.toLowerCase().trim();
-    return contacts.filter(contact =>
+    return data.filter(contact =>
       contact.name.toLowerCase().includes(normalValue)
     );
   };
@@ -22,35 +25,22 @@ const ContactList = () => {
   return (
     <List>
       {contactsList.length > 0 ? (
-        contactsList.map(({ id, name, number }) => {
+        contactsList.map(({ id, name, phone }) => {
           return (
             <ContactItem
               key={id}
               id={id}
               name={name}
-              number={number}
+              number={phone}
               deleteContact={handleDeleteContact}
             />
           );
         })
       ) : (
         <Error>
-          <strong></strong>
+          <strong>Oops, nothing</strong>
         </Error>
       )}
     </List>
   );
-};
-
-ContactList.propTypes = {
-  contacts: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      number: PropTypes.string.isRequired,
-    })
-  ),
-  deleteContact: PropTypes.func,
-};
-
-export default ContactList;
+}
