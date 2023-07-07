@@ -25,13 +25,13 @@ export default function ContactList() {
   return (
     <List>
       {contactsList.length > 0 ? (
-        contactsList.map(({ id, name, phone }) => {
+        contactsList.map(({ id, name, number }) => {
           return (
             <ContactItem
               key={id}
               id={id}
               name={name}
-              number={phone}
+              number={number}
               deleteContact={handleDeleteContact}
             />
           );
