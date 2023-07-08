@@ -15,7 +15,7 @@ import { toast } from 'react-toastify';
 
 export default function ContactForm() {
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [number, setPhone] = useState('');
 
   const { data: contacts } = useGetContactsQuery();
   const [createContact] = useCreateContactMutation();
@@ -27,11 +27,11 @@ export default function ContactForm() {
     e.preventDefault();
     const newContact = {
       name,
-      phone,
+      number,
       id: nanoid(),
     };
     contacts.find(contact => contact.name.toLowerCase() === name.toLowerCase())
-      ? toast.warn(`${name} : ${phone} is already in contacts`)
+      ? toast.warn(`${name} : ${number} is already in contacts`)
       : createContact(newContact);
 
     reset();
@@ -68,7 +68,7 @@ export default function ContactForm() {
             phonePattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             required
-            value={phone}
+            value={number}
             onChange={changeNumber}
             placeholder="Enter phone number"
             autoComplete="off"
